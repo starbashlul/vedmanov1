@@ -9,14 +9,14 @@ public class Application {
     public static void main(String args[]) {
         try(BufferedWriter writter = new BufferedWriter(new FileWriter("output.txt"))){
             //part 1
-            writter.write("Part 1");
+            writter.write("Part 1" + "\n");
             BigInteger bigint = new BigInteger("2");
             BigInteger res = bigint.pow(82589933);
             res = res.subtract(new BigInteger("1"));
             writter.write( res+ "\n");
 
             //part 2.1
-            BigInteger probPrimeNumber = generatePrime();
+            BigInteger probPrimeNumber = generatePrime(32);
             //BigInteger probPrimeNumber = new BigInteger(args[0]);
             writter.write("Простое ли число " + probPrimeNumber + " " + Boolean.toString(isPrime(probPrimeNumber)) + "\n");
 
@@ -28,7 +28,7 @@ public class Application {
             writter.write("Взаимнопростые ли числа " + a + " " + b + Boolean.toString(isCoprime(a, b)) + "\n");
 
             //part 3.1
-            writter.write("Сгенерированное простое число " + generatePrime() + "\n");
+            writter.write("Сгенерированное простое число " + generatePrime(32) + "\n");
 
             //part 3.2
             writter.write("Сгенерированные взаимнопростые числа " + generateCoprimes().toString());
@@ -82,23 +82,23 @@ public class Application {
         return gcd.equals(BigInteger.ONE);
     }
 
-    public static BigInteger generatePrime() {
+    public static BigInteger generatePrime(Integer bytesAmount) {
         BigInteger res;
         do {
             Random random = new Random();
-            res = new BigInteger(64, random);
+            res = new BigInteger(bytesAmount, random);
         } while(!isPrime(res));
         return res;
     }
 
     public static List<BigInteger> generateCoprimes() {
-        BigInteger a = generatePrime();
+        BigInteger a = generatePrime(32);
         List<BigInteger> list = new ArrayList<>();
         list.add(a);
         BigInteger b;
         do {
             Random random = new Random();
-            b = new BigInteger(64, random);
+            b = new BigInteger(32, random);
         } while(!isCoprime(a,b));
         list.add(b);
         return list;
