@@ -7,33 +7,28 @@ import java.util.Random;
 
 public class Application {
     public static void main(String args[]) {
-        try(BufferedWriter writter = new BufferedWriter(new FileWriter("output.txt"))){
+        try(BufferedWriter writter = new BufferedWriter(new FileWriter("output.txt"))) {
             //part 1
-            writter.write("Part 1" + "\n");
-            BigInteger bigint = new BigInteger("2");
-            BigInteger res = bigint.pow(82589933);
-            res = res.subtract(new BigInteger("1"));
-            writter.write( res+ "\n");
+            System.out.println("started");
+            String message = args[0];
 
-            //part 2.1
-            BigInteger probPrimeNumber = generatePrime(32);
-            //BigInteger probPrimeNumber = new BigInteger(args[0]);
-            writter.write("Простое ли число " + probPrimeNumber + " " + Boolean.toString(isPrime(probPrimeNumber)) + "\n");
+            writter.write(message+"\n");
 
-            //part 2.2
-            //BigInteger a = new BigInteger(args[1]);
-            BigInteger a = new BigInteger("23562345");
-            //BigInteger b = new BigInteger(args[2]);
-            BigInteger b = new BigInteger("9568203");
-            writter.write("Взаимнопростые ли числа " + a + " " + b + Boolean.toString(isCoprime(a, b)) + "\n");
 
-            //part 3.1
-            writter.write("Сгенерированное простое число " + generatePrime(32) + "\n");
 
-            //part 3.2
-            writter.write("Сгенерированные взаимнопростые числа " + generateCoprimes().toString());
+            writter.write("Generated session\n");
+            BigInteger encodedMessage = RSAEncryption.encodeMessage(message, Integer.valueOf(args[1]));
+            System.out.println("???");
+            RSAEncryption.currentSession.toString();
+
+            writter.write("Encoded message\n");
+            writter.write(encodedMessage+"\n");
+
+            writter.write("Decoded message\n");
+            writter.write(RSAEncryption.decodeMessage(encodedMessage));
         }
         catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
