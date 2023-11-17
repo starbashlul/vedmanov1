@@ -5,11 +5,13 @@ public class RSAEncryption {
 
     public static RSASession currentSession;
 
-    public static RSASession generateSession(Integer bytesAmount) {
+    public static RSASession generateSession(Integer bitesAmount) {
         RSASession rsaSession = new RSASession();
+        Random rand = new Random();
 
-        rsaSession.p = Application.generatePrime(bytesAmount);
-        rsaSession.q = Application.generatePrime(bytesAmount);
+        rsaSession.p = BigInteger.probablePrime(bitesAmount / 2, rand);
+
+        rsaSession.q = BigInteger.probablePrime(bitesAmount / 2, rand);
 
         System.out.println("p and q generated successfully " + rsaSession.p + " " + rsaSession.q);
 
@@ -21,33 +23,28 @@ public class RSAEncryption {
                 .multiply(rsaSession.q.subtract(BigInteger.ONE));
 
 
-        System.out.println("eiler generated successfull " + rsaSession.eiler);
+        System.out.println("eiler generated successfully " + rsaSession.eiler);
 
-        for(BigInteger d = new BigInteger("2"); d.compareTo(rsaSession.eiler)<1; d=d.add(BigInteger.ONE)) {
-            if(d.multiply(rsaSession.e).mod(rsaSession.eiler).equals(BigInteger.ONE)) {
-                rsaSession.d=new BigInteger(String.valueOf(d));
-                break;
-            }
-        }
+        rsaSession.d = rsaSession.e.modInverse(rsaSession.eiler);
 
         System.out.println("d generated successfully " + rsaSession.d);
 
         return rsaSession;
     }
 
-    public static BigInteger encodeMessage(String message, Integer bytesAmount) {
-        RSASession rsaSession = generateSession(bytesAmount);
+    public static BigInteger encodeMessage(String message, Integer bitesAmount) {
+        RSASession rsaSession = generateSession(bitesAmount);
         RSAEncryption.currentSession = rsaSession;
         BigInteger integerMessage = BigInteger.ZERO;
         for (int i = 0; i < message.length(); i++) {
             char cha = message.charAt(i);
             int c = cha;
             if (c <= 127) {
-                integerMessage = (integerMessage.multiply(new BigInteger("128"))).add(new BigInteger(String.valueOf(c-96)));
+                integerMessage = (integerMessage.multiply(new BigInteger("128"))).add(new BigInteger(String.valueOf(c)));
             }
         }
-        System.out.println("Integer message" + integerMessage);
-        integerMessage = (integerMessage.pow(rsaSession.e.intValue())).mod(rsaSession.module);
+        System.out.println("Integer message " + integerMessage);
+        integerMessage = integerMessage.modPow(rsaSession.e, rsaSession.module);
         System.out.println("Integer encoded message " + integerMessage);
         return integerMessage;
     }
@@ -55,12 +52,12 @@ public class RSAEncryption {
     public static String decodeMessage(BigInteger message) {
         StringBuilder stringMessage = new StringBuilder();
         BigInteger decodedMessage;
-        decodedMessage = message.pow(RSAEncryption.currentSession.d.intValue()).mod(RSAEncryption.currentSession.module);
-        System.out.println("Integer decoded message" + decodedMessage);
-        while(decodedMessage.intValue()>0) {
-            char c = (char) (decodedMessage.mod(new BigInteger("128")).intValue() + 96);
+        decodedMessage = message.modPow(RSAEncryption.currentSession.d, RSAEncryption.currentSession.module);
+        System.out.println("Integer decoded message " + decodedMessage);
+        while(decodedMessage.compareTo(BigInteger.ZERO)==1) {
+            char c = (char) (decodedMessage.mod(new BigInteger("128")).intValue());
             decodedMessage = decodedMessage.divide(new BigInteger("128"));
-            stringMessage.append(c);
+            stringMessage.insert(0, c);
         }
         return stringMessage.toString();
     }

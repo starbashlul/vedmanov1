@@ -12,20 +12,22 @@ public class Application {
             System.out.println("started");
             String message = args[0];
 
+            System.out.println("Message: " + message);
             writter.write(message+"\n");
 
 
 
             writter.write("Generated session\n");
             BigInteger encodedMessage = RSAEncryption.encodeMessage(message, Integer.valueOf(args[1]));
-            System.out.println("???");
-            RSAEncryption.currentSession.toString();
+            writter.write(RSAEncryption.currentSession.toString() + "\n");
 
             writter.write("Encoded message\n");
-            writter.write(encodedMessage+"\n");
+            writter.write(encodedMessage + "\n");
 
             writter.write("Decoded message\n");
-            writter.write(RSAEncryption.decodeMessage(encodedMessage));
+            String decodedMessage = RSAEncryption.decodeMessage(encodedMessage);
+            writter.write(decodedMessage);
+            System.out.println("Decoded message " + decodedMessage);
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -77,11 +79,11 @@ public class Application {
         return gcd.equals(BigInteger.ONE);
     }
 
-    public static BigInteger generatePrime(Integer bytesAmount) {
+    public static BigInteger generatePrime(Integer bitesAmount) {
         BigInteger res;
         do {
             Random random = new Random();
-            res = new BigInteger(bytesAmount, random);
+            res = new BigInteger(bitesAmount, random);
         } while(!isPrime(res));
         return res;
     }
