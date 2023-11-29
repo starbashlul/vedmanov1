@@ -1,6 +1,9 @@
 
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 class Kuznechik{
@@ -13,17 +16,6 @@ class Kuznechik{
         return ut;
     }
 
-    private String lengthTo32Bytes(String str) {
-        Stribog hash = new Stribog();
-        byte[] res = hash.getHash(str.getBytes());
-        for (int i = 0; i < 10000; i++)
-            res = hash.getHash(res);
-        String out = "";
-        for (byte b : res) {
-            out += Integer.toHexString(b);
-        }
-        return out;
-    }
 
     private byte[][] iterC = new byte[32][];
     private byte[][] iterK = new byte[10][];
@@ -112,7 +104,6 @@ class Kuznechik{
         byte[][] tmp;
         for (int i = 0; i < 4; i++) {
             tmp = KuzF(A, B, iterC[0 + 8 * i]);
-            System.out.println(Application.encodeHexString(tmp[0]));
 
             C = tmp[0];
             D = tmp[1];
@@ -141,7 +132,9 @@ class Kuznechik{
             iterK[2 * i + 2] = A;
             iterK[2 * i + 3] = B;
         }
-
+        byte[] tempG = iterK[0];
+        iterK[0]=iterK[1];
+        iterK[1]=tempG;
     }
 
     private byte[] KuzS(byte[] input)
@@ -154,7 +147,6 @@ class Kuznechik{
             }
             output[i] = Pi[T];
         }
-        //System.out.println("S: " + Application.encodeHexString(output));
         return output;
     }
 
@@ -230,13 +222,13 @@ class Kuznechik{
         }
         return state;
     }
-    public byte[] Encript(BigInteger integer) {
-        byte[] byteFile = integer.toByteArray();
+    public byte[] Encript(byte[] byteFile) {
         String masterKey = "8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef";
         return KuzEncript(byteFile,masterKey);
     }
-    public byte[] KuzEncript(byte[] file, String masterKey) {
-        masterKey = (lengthTo32Bytes(new String(masterKey))).getBytes();
+    public byte[] KuzEncript(byte[] file, String stringMasterKey) {
+        //masterKey = (lengthTo32Bytes(new String(masterKey))).getBytes();
+        KuzKeyGen(Application.decodeHexString(stringMasterKey));
         int NumOfBlocks;
         int NumberOfNull;
         byte[] OriginText = file;
@@ -263,6 +255,7 @@ class Kuznechik{
                 }
             }
         }
+        System.out.println("Origin text " + Application.encodeHexString(OriginText));
         for (int i = 0; i < NumOfBlocks; i++)
         {
             byte[] block = new byte[16];
@@ -271,8 +264,12 @@ class Kuznechik{
             }
             for (int j = 0; j < 9; j++) {
                 block = KuzX(block, iterK[j]);
+                System.out.println("IterK" + j + " " + Application.encodeHexString(iterK[j]));
+                System.out.println("This is X = " + Application.encodeHexString(block));
                 block = KuzS(block);
+                System.out.println("This is SX = " + Application.encodeHexString(block));
                 block = KuzL(block);
+                System.out.println("This is LSX = " + Application.encodeHexString(block));
             }
             block = KuzX(block, iterK[9]);
             for (int j = 0; j < 16; j++) {
@@ -283,13 +280,12 @@ class Kuznechik{
     }
 
     public byte[] Decript(byte[] file) {
-        byte[] masterKey = "8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef".getBytes();
+        String masterKey = "8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef";
         return KuzDecript(file,masterKey);
     }
 
-    private byte[] KuzDecript(byte[] file, byte[] masterKey) {
-        masterKey = (lengthTo32Bytes(new String(masterKey))).getBytes();
-        KuzKeyGen(masterKey);
+    private byte[] KuzDecript(byte[] file, String stringMasterKey) {
+        KuzKeyGen(Application.decodeHexString(stringMasterKey));
         int NumOfBlocks = file.length / 16;
         byte[] OriginText = file;
         byte[] decrText = new byte[file.length];
@@ -302,6 +298,7 @@ class Kuznechik{
             for (int j = 8; j >= 0; j--) {
                 block = KuzLReverse(block);
                 block = KuzSReverse(block);
+                System.out.println("This is Decrypting = " + Application.encodeHexString(block));
                 block = KuzX(block, iterK[j]);
             }
             for (int j = 0; j < 16; j++) {
@@ -325,5 +322,29 @@ class Kuznechik{
             }
         }
         return decrText;
+    }
+
+    private static String lengthTo32Byte(String str) {
+        byte[] hash = sha512(str.getBytes(StandardCharsets.UTF_8));
+        for (int i = 0; i < 50; i++) {
+            hash = sha512(hash);
+        }
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hash) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
+    private static byte[] sha512(byte[] data) {
+        byte[] result = null;
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-512");
+            digest.update(data);
+            result = digest.digest();
+        } catch (NoSuchAlgorithmException e) {
+            throw new AssertionError("SHA-512 support not found", e);
+        }
+        return result;
     }
 }

@@ -10,16 +10,14 @@ public class Application {
     public static void main(String args[]) {
         try(BufferedWriter writter = new BufferedWriter(new FileWriter("output.txt"))) {
             Kuznechik kuz = new Kuznechik();
-            byte[] encripted = kuz.Encript(new BigInteger("1122334455667700ffeeddccbbaa9988", 16));
-            for(int i = 0; i < encripted.length; i++) {
-                System.out.print(byteToHex(encripted[i]) + " ");
-            }
+            byte[] encripted = kuz.Encript(decodeHexString("1122334455667700ffeeddccbbaa9988"));
+
+            System.out.println("\n" + encodeHexString(encripted) + "\n");
 
             byte[] decripted = kuz.Decript(encripted);
             System.out.println();
-            for(int i = 0; i < decripted.length; i++) {
-                System.out.print(byteToHex(decripted[i]) + " ");
-            }
+            System.out.println("\n" + encodeHexString(decripted) + "\n");
+
         }
         catch (Exception ex) {
             ex.printStackTrace();
