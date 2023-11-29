@@ -1,6 +1,7 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -8,30 +9,65 @@ import java.util.Random;
 public class Application {
     public static void main(String args[]) {
         try(BufferedWriter writter = new BufferedWriter(new FileWriter("output.txt"))) {
-            //part 1
-            System.out.println("started");
-            String message = args[0];
+            Kuznechik kuz = new Kuznechik();
+            byte[] encripted = kuz.Encript(new BigInteger("1122334455667700ffeeddccbbaa9988", 16));
+            for(int i = 0; i < encripted.length; i++) {
+                System.out.print(byteToHex(encripted[i]) + " ");
+            }
 
-            System.out.println("Message: " + message);
-            writter.write(message+"\n");
-
-
-
-            writter.write("Generated session\n");
-            BigInteger encodedMessage = RSAEncryption.encodeMessage(message, Integer.valueOf(args[1]));
-            writter.write(RSAEncryption.currentSession.toString() + "\n");
-
-            writter.write("Encoded message\n");
-            writter.write(encodedMessage + "\n");
-
-            writter.write("Decoded message\n");
-            String decodedMessage = RSAEncryption.decodeMessage(encodedMessage);
-            writter.write(decodedMessage);
-            System.out.println("Decoded message " + decodedMessage);
+            byte[] decripted = kuz.Decript(encripted);
+            System.out.println();
+            for(int i = 0; i < decripted.length; i++) {
+                System.out.print(byteToHex(decripted[i]) + " ");
+            }
         }
         catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public static String encodeHexString(byte[] byteArray) {
+        StringBuffer hexStringBuffer = new StringBuffer();
+        for (int i = 0; i < byteArray.length; i++) {
+            hexStringBuffer.append(byteToHex(byteArray[i]));
+        }
+        return hexStringBuffer.toString();
+    }
+
+
+    public static byte[] decodeHexString(String hexString) {
+        if (hexString.length() % 2 == 1) {
+            throw new IllegalArgumentException(
+                    "Invalid hexadecimal String supplied.");
+        }
+
+        byte[] bytes = new byte[hexString.length() / 2];
+        for (int i = 0; i < hexString.length(); i += 2) {
+            bytes[i / 2] = hexToByte(hexString.substring(i, i + 2));
+        }
+        return bytes;
+    }
+
+    private static int toDigit(char hexChar) {
+        int digit = Character.digit(hexChar, 16);
+        if(digit == -1) {
+            throw new IllegalArgumentException(
+                    "Invalid Hexadecimal Character: "+ hexChar);
+        }
+        return digit;
+    }
+
+    public static String byteToHex(byte num) {
+        char[] hexDigits = new char[2];
+        hexDigits[0] = Character.forDigit((num >> 4) & 0xF, 16);
+        hexDigits[1] = Character.forDigit((num & 0xF), 16);
+        return new String(hexDigits);
+    }
+
+    public static byte hexToByte(String hexString) {
+        int firstDigit = toDigit(hexString.charAt(0));
+        int secondDigit = toDigit(hexString.charAt(1));
+        return (byte) ((firstDigit << 4) + secondDigit);
     }
 
     public static boolean isPrime(BigInteger number) {
