@@ -227,8 +227,9 @@ public class Stribog {
 
         h = StribG(v_0, N, h);
         h = StribG(v_0, Sigma, h);
-
-        return Arrays.copyOf(h, 32);
+        System.out.println("JEST : " + Application.encodeHexString(addModule(Application.decodeHexString("e549368917a0a2611d5e08c9c2fd5b3c6b966f94867892d384ae9d5fbdfb934055650121b7aa6d7b3e7d09d46ac4358adaa6ae44fa3b0402c4166d2c3eb2ef02"
+        ), Application.decodeHexString("7b92735cd25c487977b8a5dd81537f89d48b15e85172a036aeebfbd6010113fd675658017980286895ddbd5e37f065dcc09117e93bc4dd6202298f1f23689947"))));
+        return Arrays.copyOf(h, 64);
     }
 
     private byte[] addModule(byte[] a, byte[] b)
@@ -262,8 +263,13 @@ public class Stribog {
         K = StribL(K);
 
         byte[] t = StribE(K, m);
+        System.out.println("This is t:" + Application.encodeHexString(t) );
         t = StribX(h, t);
+
+        System.out.println("This is 2t:" + Application.encodeHexString(t));
         byte[] result = StribX(t, m);
+
+        System.out.println("This is 3t-result:" + Application.encodeHexString(result));
 
         return result;
     }
@@ -272,15 +278,27 @@ public class Stribog {
     {
         byte[] state;
 
+        System.out.println("This is K " + 1 + " : " + Application.encodeHexString(K));
         state = StribX(K, m);
+
+        System.out.println("This is X " + (1) + " : " + Application.encodeHexString(state));
         for(int i = 0; i < 12; i++)
         {
             state = SrtibS(state);
+            System.out.println("This is S " + (i+1) + " : " + Application.encodeHexString(state));
             state = StribP(state);
+            System.out.println("This is P " + (i+1) + " : " + Application.encodeHexString(state));
             state = StribL(state);
+            //System.out.println("This is K " + (i+1) + " : " + Application.encodeHexString(K));
+            System.out.println("This is State L" + (i+1) + " : " + Application.encodeHexString(state));
 
             K = KeyShedule(K, i);
-            state = StribX(state, K);
+            System.out.println("This is K " + (i+2) + " : " + Application.encodeHexString(K));
+            state = StribX(K, state);
+
+            System.out.println("This is X " + (i+2) + " : " + Application.encodeHexString(state));
+            //if(i==11);
+            //System.out.println("This is K " + (i+2) + " : " + Application.encodeHexString(K));
         }
 
         return state;
