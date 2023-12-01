@@ -1,7 +1,7 @@
 
 
 
-import java.util.Arrays;
+import java.util.*;
 
 public class Stribog {
 
@@ -227,8 +227,11 @@ public class Stribog {
 
         h = StribG(v_0, N, h);
         h = StribG(v_0, Sigma, h);
-        System.out.println("JEST : " + Application.encodeHexString(addModule(Application.decodeHexString("e549368917a0a2611d5e08c9c2fd5b3c6b966f94867892d384ae9d5fbdfb934055650121b7aa6d7b3e7d09d46ac4358adaa6ae44fa3b0402c4166d2c3eb2ef02"
-        ), Application.decodeHexString("7b92735cd25c487977b8a5dd81537f89d48b15e85172a036aeebfbd6010113fd675658017980286895ddbd5e37f065dcc09117e93bc4dd6202298f1f23689947"))));
+        System.out.println("JEST : " + Application.encodeHexString(addModule(Application.decodeHexString("e549368917a0a2611d5e08c9c2fd5b" +
+                "3c6b966f94867892d384ae9d5fbdfb934055650121b7aa6d7b3e7d09d46ac" +
+                "4358adaa6ae44fa3b0402c4166d2c3eb2ef02"
+        ), Application.decodeHexString("7b92735cd25c487977b8a5dd81537f89d48b15e85172a036aeebfbd6010113fd6" +
+                "75658017980286895ddbd5e37f065dcc09117e93bc4dd6202298f1f23689947"))));
         return Arrays.copyOf(h, 64);
     }
 
@@ -338,99 +341,42 @@ public class Stribog {
 
     private byte[] StribL(byte[] a)
     {
+
         byte[] result = new byte[64];
-        for(int i = 0; i < 8; i++)
-        {
-            for(int k = 0; k < 8; k++)
+        //byte[] t = new byte[8];
+        byte[] tempArray = new byte[8];
+        byte[] reversed = new byte[8];
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+                tempArray[j]=a[8*i+j];
+            }
+            for (int ij = 0; ij < 4; ij++) {
+                byte temp = tempArray[ij];
+                tempArray[ij] = tempArray[8 - 1 - ij];
+                tempArray[8 - 1 - ij] = temp;
+            }
+            BitSet bitSet = BitSet.valueOf(tempArray);
+            BitSet reversedBitSet = new BitSet();
+            int reversedIndex = 0;
+            for (int ijk = 63; ijk >= 0; ijk--) {
+                if (bitSet.get(ijk)) {
+                    reversedBitSet.set(reversedIndex);
+                }
+                reversedIndex++;
+            }
+            BitSet t = new BitSet();
+            for (int j = 0; j < 64; j++)
             {
-                if((a[i*8+k] & (0x80)) != 0)
-                {
-                    result[8*i] ^= A[k*8+0][0];
-                    result[8*i+1] ^= A[k*8+0][1];
-                    result[8*i+2] ^= A[k*8+0][2];
-                    result[8*i+3] ^= A[k*8+0][3];
-                    result[8*i+4] ^= A[k*8+0][4];
-                    result[8*i+5] ^= A[k*8+0][5];
-                    result[8*i+6] ^= A[k*8+0][6];
-                    result[8*i+7] ^= A[k*8+0][7];
-                }
-                if((a[i*8+k] & (0x40)) != 0)
-                {
-                    result[8*i] ^= A[k*8+1][0];
-                    result[8*i+1] ^= A[k*8+1][1];
-                    result[8*i+2] ^= A[k*8+1][2];
-                    result[8*i+3] ^= A[k*8+1][3];
-                    result[8*i+4] ^= A[k*8+1][4];
-                    result[8*i+5] ^= A[k*8+1][5];
-                    result[8*i+6] ^= A[k*8+1][6];
-                    result[8*i+7] ^= A[k*8+1][7];
-                }
-                if((a[i*8+k] & (0x20)) != 0)
-                {
-                    result[8*i] ^= A[k*8+2][0];
-                    result[8*i+1] ^= A[k*8+2][1];
-                    result[8*i+2] ^= A[k*8+2][2];
-                    result[8*i+3] ^= A[k*8+2][3];
-                    result[8*i+4] ^= A[k*8+2][4];
-                    result[8*i+5] ^= A[k*8+2][5];
-                    result[8*i+6] ^= A[k*8+2][6];
-                    result[8*i+7] ^= A[k*8+2][7];
-                }
-                if((a[i*8+k] & (0x10)) != 0)
-                {
-                    result[8*i] ^= A[k*8+3][0];
-                    result[8*i+1] ^= A[k*8+3][1];
-                    result[8*i+2] ^= A[k*8+3][2];
-                    result[8*i+3] ^= A[k*8+3][3];
-                    result[8*i+4] ^= A[k*8+3][4];
-                    result[8*i+5] ^= A[k*8+3][5];
-                    result[8*i+6] ^= A[k*8+3][6];
-                    result[8*i+7] ^= A[k*8+3][7];
-                }
-                if((a[i*8+k] & (0x8)) != 0)
-                {
-                    result[8*i] ^= A[k*8+4][0];
-                    result[8*i+1] ^= A[k*8+4][1];
-                    result[8*i+2] ^= A[k*8+4][2];
-                    result[8*i+3] ^= A[k*8+4][3];
-                    result[8*i+4] ^= A[k*8+4][4];
-                    result[8*i+5] ^= A[k*8+4][5];
-                    result[8*i+6] ^= A[k*8+4][6];
-                    result[8*i+7] ^= A[k*8+4][7];
-                }
-                if((a[i*8+k] & (0x4)) != 0)
-                {
-                    result[8*i] ^= A[k*8+5][0];
-                    result[8*i+1] ^= A[k*8+5][1];
-                    result[8*i+2] ^= A[k*8+5][2];
-                    result[8*i+3] ^= A[k*8+5][3];
-                    result[8*i+4] ^= A[k*8+5][4];
-                    result[8*i+5] ^= A[k*8+5][5];
-                    result[8*i+6] ^= A[k*8+5][6];
-                    result[8*i+7] ^= A[k*8+5][7];
-                }
-                if((a[i*8+k] & (0x2)) != 0)
-                {
-                    result[8*i] ^= A[k*8+6][0];
-                    result[8*i+1] ^= A[k*8+6][1];
-                    result[8*i+2] ^= A[k*8+6][2];
-                    result[8*i+3] ^= A[k*8+6][3];
-                    result[8*i+4] ^= A[k*8+6][4];
-                    result[8*i+5] ^= A[k*8+6][5];
-                    result[8*i+6] ^= A[k*8+6][6];
-                    result[8*i+7] ^= A[k*8+6][7];
-                }
-                if((a[i*8+k] & (0x1)) != 0)
-                {
-                    result[8*i] ^= A[k*8+7][0];
-                    result[8*i+1] ^= A[k*8+7][1];
-                    result[8*i+2] ^= A[k*8+7][2];
-                    result[8*i+3] ^= A[k*8+7][3];
-                    result[8*i+4] ^= A[k*8+7][4];
-                    result[8*i+5] ^= A[k*8+7][5];
-                    result[8*i+6] ^= A[k*8+7][6];
-                    result[8*i+7] ^= A[k*8+7][7];
-                }
+                if (reversedBitSet.get(j))
+                    t.
+            }
+            for (int ij = 0; ij < 32; ij++) {
+                byte temp = t[ij];
+                t[ij] = t[32 - 1 - ij];
+                t[32 - 1 - ij] = temp;
+            }
+            for(int j = 0; j < 8; j++) {
+                result[8*i+j]=t[j];
             }
         }
         return result;
