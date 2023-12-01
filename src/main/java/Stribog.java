@@ -179,7 +179,7 @@ public class Stribog {
         int length = message.length * 8;
         int inc = 0;
 
-        while(length >= 512)
+        /*while(length >= 512)
         {
             inc++;
             byte[] tmp = Arrays.copyOfRange(message, message.length - 64*(inc), message.length - (inc-1)*64);
@@ -187,7 +187,7 @@ public class Stribog {
             N = addModule(N, v_512);
             Sigma = addModule(Sigma, tmp);
             length -=512;
-        }
+        }*/
 
         message = Arrays.copyOf(message, message.length - 64*inc);
 
@@ -202,9 +202,11 @@ public class Stribog {
 
             message = tmpMessage;
         }
+        System.out.println("Message = " + Application.encodeHexString(message));
 
         h = StribG(N, message, h);
 
+        System.out.println("H = " + Application.encodeHexString(h));
         byte[] NMessage = new byte[64];
         Arrays.fill(NMessage, (byte) 0x00);
 
@@ -217,7 +219,11 @@ public class Stribog {
         }
 
         N = addModule(N, NMessage);
+
+        System.out.println("N = " + Application.encodeHexString(N));
         Sigma = addModule(Sigma, message);
+
+        System.out.println("Sigma = " + Application.encodeHexString(Sigma));
 
         h = StribG(v_0, N, h);
         h = StribG(v_0, Sigma, h);
