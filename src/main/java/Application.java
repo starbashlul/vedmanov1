@@ -21,8 +21,8 @@ public class Application {
             System.out.println("Stribog part");
             Stribog stribog = new Stribog();
             byte[] hash = stribog.getHash(decodeHexString(
-                    "323130393837363534333231303938373636343332313039383736353433323130393837363534333231303938373635343332313039383736353433323130"));
-            System.out.println(encodeHexString(hash));
+                    "323130393837363534333231303938373635343332313039383736353433323130393837363534333231303938373635343332313039383736353433323130"));
+            System.out.println("That is the final hash " + encodeHexString(hash));
         }
         catch (Exception ex) {
             ex.printStackTrace();
