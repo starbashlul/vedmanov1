@@ -161,7 +161,7 @@ public class Stribog {
     private byte[] StribogHash(byte[] message)
     {
         byte[] h = new byte[64];
-        Arrays.fill(h, (byte)0x00);
+        Arrays.fill(h, (byte)0x01);
 
         byte[] N = new byte[64];
         Arrays.fill(N, (byte)0x00);
@@ -227,7 +227,7 @@ public class Stribog {
 
         h = StribG(v_0, N, h);
         h = StribG(v_0, Sigma, h);
-        return Arrays.copyOf(h, 64);
+        return Arrays.copyOf(h, 32);
     }
 
     private byte[] addModule(byte[] a, byte[] b)
